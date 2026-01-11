@@ -10,3 +10,20 @@ If the expression is rendered as plain text, the input is probably not vulnerabl
 
 Further payloads using template-specific syntax (such as comments {* *}, string operations, or function calls) help narrow down the template engine (e.g., Smarty, Jinja2, Twig).
 The image above illustrates a step-by-step decision flow to detect SSTI and identify the underlying template engine.
+
+
+## Smarty
+
+After confirming that the payload *${7*7}* is evaluated (returns 49), we can attempt template-specific payloads to identify the engine and confirm exploitation.
+
+Smarty supports modifiers, such as upper:
+```
+{'Hello'|upper}
+```
+If the output is returned in uppercase (HELLO), this strongly indicates Smarty.
+
+To further confirm and demonstrate impact, we can attempt command execution using the system function:
+```
+{system("id")}
+```
+If this returns system user information, it clearly confirms Smarty SSTI with command execution capability.
