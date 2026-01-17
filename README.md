@@ -4,7 +4,7 @@
 
 We can use a automated tool to find SSTI for us https://github.com/vladko312/SSTImap.git
 
-SSTI can be identified by injecting simple template expressions and observing how the server processes them. A common first test is an arithmetic expression like *${7*7}* or *{{7*7}}*.
+SSTI can be identified by injecting simple template expressions and observing how the server processes them. A common first test is an arithmetic expression like  ${7*7} or {{7*7}}.
 Follow the green lines if the payload worked or follow red line.
 If the response evaluates to 49, template execution is likely occurring.
 
