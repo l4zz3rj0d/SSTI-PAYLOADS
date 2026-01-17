@@ -4,7 +4,7 @@
 
 We can use a automated tool to find SSTI for us https://github.com/vladko312/SSTImap.git
 
-SSTI can be identified by injecting simple template expressions and observing how the server processes them. A common first test is an arithmetic expression like  ${7*7} or {{7*7}}.
+SSTI can be identified by injecting simple template expressions and observing how the server processes them. A common first test is an arithmetic expression like *${7\*7} or {{7\*7}}*.
 Follow the green lines if the payload worked or follow red line.
 If the response evaluates to 49, template execution is likely occurring.
 
@@ -16,7 +16,7 @@ The image above illustrates a step-by-step decision flow to detect SSTI and iden
 
 ## PHP - Smarty
 
-After confirming that the payload *${7*7}* is evaluated (returns 49), we can attempt template-specific payloads to identify the engine and confirm exploitation.
+After confirming that the payload *${7\*7}* is evaluated (returns 49), we can attempt template-specific payloads to identify the engine and confirm exploitation.
 
 Smarty supports modifiers, such as upper:
 ```
